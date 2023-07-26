@@ -10,12 +10,14 @@ bp = Blueprint("stores", __name__, description="Operations on stores")
 
 @bp.route("/store/<string:store_id>")
 class Store(MethodView):
+    @bp.response(200, StoreSchema)
     def get(self, store_id):
         try:
             return stores[store_id]
         except KeyError:
             abort(404, message="Store not found.")
 
+    @bp.response(204)
     def delete(self, store_id):
         try:
             del stores[store_id]
@@ -26,10 +28,12 @@ class Store(MethodView):
 
 @bp.route("/store")
 class StoreList(MethodView):
+    @bp.response(200, StoreSchema(many=True))
     def get(self):
-        return {"stores": list(stores.values())}
+        return stores.values()
 
     @bp.arguments(StoreSchema)
+    @bp.response(201, StoreSchema)
     def post(self, store_data):
         for store in stores.values():
             if store_data["name"] == store["name"]:
