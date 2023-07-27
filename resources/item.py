@@ -1,13 +1,10 @@
-import uuid
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from schemas import ItemSchema, ItemUpdateSchema
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from db import db
 
 from models import ItemModel
-
-from db import items
 
 bp = Blueprint("items", __name__, description="Operations on items")
 
@@ -59,7 +56,9 @@ class ItemList(MethodView):
         try:
             db.session.add(item)
             db.session.commit()
-        except SQLAlchemyError:
-            abort(500, message="An error occurred while inserting the item.")
+        except IntegrityError:
+            abort(400, message="An item with that name already exists.")
+        except SQLAlchemyError as e:
+            abort(500, message=str(e))
 
         return item

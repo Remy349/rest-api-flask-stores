@@ -7,6 +7,7 @@ from db import db
 
 from resources.item import bp as item_bp
 from resources.store import bp as store_bp
+from resources.tag import bp as tag_bp
 
 
 def create_app(db_url=None):
@@ -35,5 +36,6 @@ def create_app(db_url=None):
 
     api.register_blueprint(item_bp)
     api.register_blueprint(store_bp)
+    api.register_blueprint(tag_bp)
 
     return app

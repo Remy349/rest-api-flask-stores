@@ -1,4 +1,3 @@
-import uuid
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from schemas import StoreSchema
@@ -6,8 +5,6 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from db import db
 
 from models import StoreModel
-
-from db import stores
 
 bp = Blueprint("stores", __name__, description="Operations on stores")
 
@@ -45,7 +42,7 @@ class StoreList(MethodView):
             db.session.commit()
         except IntegrityError:
             abort(400, message="A store with that name already exists.")
-        except SQLAlchemyError:
-            abort(500, message="An error occurred creating the store.")
+        except SQLAlchemyError as e:
+            abort(500, message=str(e))
 
         return store
