@@ -17,11 +17,15 @@ marshmallow = "==3.20.1"
 packaging = "==23.1"
 webargs = "==8.3.0"
 flask-sqlalchemy = "==3.0.5"
-apispec = {version = "==6.3.0", extras = ["marshmallow"]}
 greenlet = "==2.0.2"
 sqlalchemy = "==2.0.19"
 typing-extensions = "==4.7.1"
-flask-jwt-extended = "*"
+flask-jwt-extended = "==4.5.2"
+flask-migrate = "==4.0.4"
+alembic = "==1.11.1"
+apispec = {version = "==6.3.0", extras = ["marshmallow"]}
+mako = "==1.2.4"
+pyjwt = "==2.8.0"
 
 [dev-packages]
 

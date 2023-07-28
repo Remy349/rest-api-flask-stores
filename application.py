@@ -6,6 +6,7 @@ from flask_smorest import Api
 from db import db
 from flask_jwt_extended import JWTManager
 from blocklist import BLOCKLIST
+from flask_migrate import Migrate
 
 from resources.item import bp as item_bp
 from resources.store import bp as store_bp
@@ -13,6 +14,7 @@ from resources.tag import bp as tag_bp
 from resources.user import bp as user_bp
 
 jwt = JWTManager()
+migrate = Migrate()
 
 
 def create_app(db_url=None):
@@ -35,6 +37,7 @@ def create_app(db_url=None):
 
     db.init_app(app)
     jwt.init_app(app)
+    migrate.init_app(app, db)
 
     @jwt.token_in_blocklist_loader
     def check_if_token_in_blocklist(jwt_header, jwt_payload):
@@ -108,9 +111,6 @@ def create_app(db_url=None):
         )
 
     api = Api(app)
-
-    with app.app_context():
-        db.create_all()
 
     api.register_blueprint(item_bp)
     api.register_blueprint(store_bp)
