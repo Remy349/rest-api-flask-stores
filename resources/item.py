@@ -2,6 +2,7 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from schemas import ItemSchema, ItemUpdateSchema
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from flask_jwt_extended import get_jwt, jwt_required
 from db import db
 
 from models import ItemModel
@@ -11,13 +12,20 @@ bp = Blueprint("items", __name__, description="Operations on items")
 
 @bp.route("/item/<string:item_id>")
 class Item(MethodView):
+    @jwt_required()
     @bp.response(200, ItemSchema)
     def get(self, item_id):
         item = db.get_or_404(ItemModel, item_id)
         return item
 
+    @jwt_required()
     @bp.response(204)
     def delete(self, item_id):
+        jwt = get_jwt()
+
+        if not jwt.get("is_admin"):
+            abort(401, message="Admin privilege required.")
+
         item = db.get_or_404(ItemModel, item_id)
 
         db.session.delete(item)
@@ -44,10 +52,12 @@ class Item(MethodView):
 
 @bp.route("/item")
 class ItemList(MethodView):
+    @jwt_required()
     @bp.response(200, ItemSchema(many=True))
     def get(self):
         return ItemModel.query.all()
 
+    @jwt_required(fresh=True)
     @bp.arguments(ItemSchema)
     @bp.response(201, ItemSchema)
     def post(self, item_data):
